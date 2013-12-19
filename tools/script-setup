@@ -1,0 +1,20 @@
+cd $(dirname $0)/..
+export PROJECT_DIR=$(pwd)
+cd - > /dev/null # /dev/null to suppress printing of working directory
+
+DEFAULTS_FILE="/etc/default/dogetrader"
+if [ -f "${DEFAULTS_FILE}" ]
+then
+    source ${DEFAULTS_FILE}
+else
+    echo "ERROR: ${DEFAULTS_FILE} does not exist!"
+    exit 1
+fi
+
+if [ "${MAKING_VENV}" != "true" ] && [ ! -d "${VENV_DIR}" ]
+then
+    echo "ERROR: Python virtual environment directory ${VENV_DIR} does not exist!"
+    exit 1
+fi
+
+source "${VENV_DIR}/bin/activate"
