@@ -3,10 +3,10 @@ import re
 import subprocess
 
 
-VARIABLE_PREFIX = 'DOGETRADER_'
+VARIABLE_PREFIX = 'SUCH_IO_'
 
 
-def source_environment_vars(file_path='/etc/default/dogetrader', key_regex=re.compile('^(%s|DJANGO_).*' % VARIABLE_PREFIX)):
+def source_environment_vars(file_path='/etc/default/such_io', key_regex=re.compile('^(%s|DJANGO_).*' % VARIABLE_PREFIX)):
     """
     Sources environment variables from the specified bash script.
     """

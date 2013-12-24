@@ -2,7 +2,7 @@ cd $(dirname $0)/..
 export PROJECT_DIR=$(pwd)
 cd - > /dev/null # /dev/null to suppress printing of working directory
 
-DEFAULTS_FILE="/etc/default/dogetrader"
+DEFAULTS_FILE="/etc/default/such_io"
 if [ -f "${DEFAULTS_FILE}" ]
 then
     source ${DEFAULTS_FILE}

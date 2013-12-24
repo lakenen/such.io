@@ -63,9 +63,9 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
-ROOT_URLCONF = 'dogetrader.urls'
+ROOT_URLCONF = 'such_server.urls'
 
-WSGI_APPLICATION = 'dogetrader.wsgi.application'
+WSGI_APPLICATION = 'such_server.wsgi.application'
 
 TEMPLATE_DIRS = (
     os.path.join(PROJECT_DIR, 'templates'),
