@@ -1,0 +1,40 @@
+<div class="orders">
+  <div class="sell-orders">
+    <h2>Sell Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Price ({{ market.base }})</th>
+          <th>{{ market.market }}</th>
+          <th>Total ({{ market.base }})</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="order in orders.sell">
+          <td>{{ order.price | cryptoCurrency }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.price * order.quantity | cryptoCurrency }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+  <div class="buy-orders">
+    <h2>Buy Orders</h2>
+    <table>
+      <thead>
+        <tr>
+          <th>Price ({{ market.base }})</th>
+          <th>{{ market.market }}</th>
+          <th>Total ({{ market.base }})</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr ng-repeat="order in orders.buy">
+          <td>{{ order.price | cryptoCurrency }}</td>
+          <td>{{ order.quantity }}</td>
+          <td>{{ order.price * order.quantity | cryptoCurrency }}</td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+</div>

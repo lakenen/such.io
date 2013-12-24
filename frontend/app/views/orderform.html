@@ -1,0 +1,21 @@
+<div class="order-form">
+  <h2>{{ order.action }} {{ market.market }}</h2>
+  <div>
+    Quantity: <input type="text" pattern="^[0-9]*(\.[0-9]+)?$" ng-model="order.quantity" required />
+    <select ng-model="order.market">
+      <option>{{ market.market }}</option>
+      <option>{{ market.base }}</option>
+    </select>
+  </div>
+  <div>
+    Price: <input type="text" pattern="^[0-9]*(\.[0-9]+)?$" ng-model="order.price" required /> ({{ market.base }})
+  </div>
+  <div ng-show="order.market === market.market">
+    Required: <input value="{{ order.quantity * order.price | number:8 }}" readonly /> ({{ market.base }})
+  </div>
+  <div ng-show="order.market === market.base">
+    Expected: <input value="{{ order.quantity / order.price | number:8 }}" readonly /> ({{ market.market }})
+  </div>
+
+  <button ng-click="order.place()">Place Order</button>
+</div>
