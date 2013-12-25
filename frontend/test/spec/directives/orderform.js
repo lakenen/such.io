@@ -3,7 +3,7 @@
 describe('Directive: orderform', function () {
 
   // load the directive's module
-  beforeEach(module('suchioApp'));
+  beforeEach(module('suchApp'));
 
   var element,
     scope;
@@ -13,8 +13,8 @@ describe('Directive: orderform', function () {
   }));
 
   it('should make hidden element visible', inject(function ($compile) {
-    element = angular.element('<orderform></orderform>');
+    element = angular.element('<div order-list></div>');
     element = $compile(element)(scope);
-    expect(element.text()).toBe('this is the orderform directive');
+    expect(element);
   }));
 });

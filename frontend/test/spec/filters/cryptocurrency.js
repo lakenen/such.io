@@ -3,7 +3,7 @@
 describe('Filter: cryptoCurrency', function () {
 
   // load the filter's module
-  beforeEach(module('suchio'));
+  beforeEach(module('suchApp'));
 
   // initialize a new instance of the filter before each test
   var cryptoCurrency;

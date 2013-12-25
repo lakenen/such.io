@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('suchio')
+angular.module('suchApp')
   .directive('orderForm', function () {
     return {
       templateUrl: 'views/orderform.html'

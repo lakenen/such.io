@@ -1,19 +1,33 @@
 'use strict';
 
-angular.module('suchio')
-  .controller('OrderFormCtrl', ['$scope', '$filter', function ($scope, $filter) {
-    $scope.market = {
+angular.module('suchApp')
+  .controller('OrderFormCtrl', function ($scope, $rootScope, $filter) {
+    var cryptoFilter = $filter('cryptoCurrency');
+    var market = {
       market: 'DOGE',
       base: 'BTC',
-      price: $filter('number')(0.000000791, 8)
+      buyPrice: cryptoFilter(0.00000070),
+      sellPrice: cryptoFilter(0.00000069),
     };
-    $scope.order = {
+    var order = {
       action: 'Buy',
       quantity: 0,
-      market: $scope.market.market,
-      price: $scope.market.price,
+      market: market.market,
+      price: market.buyPrice,
       place: function () {
         console.log(this.quantity);
       }
     };
-  }]);
+
+    $scope.updateQuantity = function () {
+      var qty = parseFloat(order.quantity),
+        price = parseFloat(order.price);
+      qty = order.market === market.base ?
+        qty * price :
+        qty / price;
+      order.quantity = cryptoFilter(qty);
+    };
+    $scope.market = market;
+    $scope.order = order;
+    $scope.txFee = $rootScope.txFee;
+  });

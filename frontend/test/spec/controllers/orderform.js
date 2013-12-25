@@ -1,9 +1,9 @@
 'use strict';
 
-describe('Controller: OrderformCtrl', function () {
+describe('Controller: OrderFormCtrl', function () {
 
   // load the controller's module
-  beforeEach(module('suchioApp'));
+  beforeEach(module('suchApp'));
 
   var OrderformCtrl,
     scope;
@@ -11,12 +11,12 @@ describe('Controller: OrderformCtrl', function () {
   // Initialize the controller and a mock scope
   beforeEach(inject(function ($controller, $rootScope) {
     scope = $rootScope.$new();
-    OrderformCtrl = $controller('OrderformCtrl', {
+    OrderformCtrl = $controller('OrderFormCtrl', {
       $scope: scope
     });
   }));
 
-  it('should attach a list of awesomeThings to the scope', function () {
-    expect(scope.awesomeThings.length).toBe(3);
+  it('should to the scope', function () {
+    expect(scope);
   });
 });

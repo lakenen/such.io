@@ -1,18 +1,18 @@
 'use strict';
 
-describe('Service: orderList', function () {
+describe('Service: Socket', function () {
 
   // load the service's module
   beforeEach(module('suchApp'));
 
   // instantiate service
-  var orderList;
-  beforeEach(inject(function (OrderList) {
-    orderList = OrderList;
+  var Socket;
+  beforeEach(inject(function (_Socket_) {
+    Socket = _Socket_;
   }));
 
   it('should do something', function () {
-    expect(true);
+    expect(!!Socket).toBe(true);
   });
 
 });

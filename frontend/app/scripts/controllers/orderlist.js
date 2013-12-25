@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('suchio')
+angular.module('suchApp')
   .controller('OrderListCtrl', ['$scope', 'OrderList', function ($scope, OrderList) {
     $scope.orders = OrderList.fetch('DOGE', 'BTC');
     $scope.market = {

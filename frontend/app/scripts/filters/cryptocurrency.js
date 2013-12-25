@@ -1,8 +1,8 @@
 'use strict';
 
-angular.module('suchio')
+angular.module('suchApp')
   .filter('cryptoCurrency', function () {
     return function (input) {
-      return input.toFixed(8);
+      return (parseFloat(input) || 0).toFixed(8).replace(/^([0-9]*)\.00+$/, '$1');
     };
   });

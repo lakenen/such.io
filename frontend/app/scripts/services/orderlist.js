@@ -1,6 +1,6 @@
 'use strict';
 
-angular.module('suchio')
+angular.module('suchApp')
   .factory('OrderList', ['$resource', function ($resource) {
     return {
       fetch: function (market, base) {
