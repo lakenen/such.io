@@ -1,6 +1,11 @@
 // Generated on 2013-12-23 using generator-angular 0.7.1
 'use strict';
 
+var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
+var mountFolder = function (connect, dir) {
+  return connect.static(require('path').resolve(dir));
+};
+
 // # Globbing
 // for performance reasons we're only matching one level down:
 // 'test/spec/{,*/}*.js'
@@ -8,6 +13,8 @@
 // 'test/spec/**/*.js'
 
 module.exports = function (grunt) {
+
+  var modRewrite = require('connect-modrewrite');
 
   // Load grunt tasks automatically
   require('load-grunt-tasks')(grunt);
@@ -63,7 +70,18 @@ module.exports = function (grunt) {
         port: 9000,
         // Change this to '0.0.0.0' to access the server from outside.
         hostname: 'localhost',
-        livereload: 35729
+        livereload: 35729,
+        // allow deep link reloads (with pushstate)... eg, rewrite everything 'cept static assets to /
+        middleware: function (connect) {
+          return [
+            lrSnippet,
+            modRewrite([
+              '!\\.?(js|css|html|eot|svg|ttf|woff|otf|css|png|jpg|git|ico) / [L]'
+            ]),
+            mountFolder(connect, '.tmp'),
+            mountFolder(connect, 'app')
+          ];
+        }
       },
       livereload: {
         options: {

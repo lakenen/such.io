@@ -1,0 +1,11 @@
+<div class="login-form" ng-show="!loggedIn">
+  <form>
+    <input type="text" ng-model="user.name" placeholder="username" required />
+    <input type="password" ng-model="user.password" placeholder="password" required />
+    <button ng-click="login()">login</button>
+    <a href="/signup">sign up</a>
+  </form>
+</div>
+<div class="user-info" ng-show="loggedIn">
+  {{ user.name }} | <a href="/logout">logout</a>
+</div>

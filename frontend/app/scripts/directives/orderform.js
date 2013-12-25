@@ -3,6 +3,6 @@
 angular.module('suchApp')
   .directive('orderForm', function () {
     return {
-      templateUrl: 'views/orderform.html'
+      templateUrl: '/views/orderform.html'
     };
   });
