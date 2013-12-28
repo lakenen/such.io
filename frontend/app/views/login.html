@@ -1,10 +1,10 @@
 <div class="login-form" ng-show="!loggedIn">
-  <form>
+  <form ng-submit="login()">
     <input type="text" ng-model="user.name" placeholder="username" required />
     <input type="password" ng-model="user.password" placeholder="password" required />
-    <button ng-click="login()">login</button>
-    <a href="/signup">sign up</a>
+    <button>login</button>
   </form>
+  <a href="/signup">sign up</a>
 </div>
 <div class="user-info" ng-show="loggedIn">
   {{ user.name }} | <a href="/logout">logout</a>

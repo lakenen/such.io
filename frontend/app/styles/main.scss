@@ -21,3 +21,10 @@ body {
   color: #777;
   border-top: 1px solid #e5e5e5;
 }
+
+input.ng-dirty.ng-invalid {
+  border: 1px solid red;
+}
+input.ng-valid {
+  border: 1px solid green;
+}
