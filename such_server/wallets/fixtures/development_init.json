@@ -1,0 +1,14 @@
+[
+    {
+        "fields": {
+            "currency": 1,
+            "name": "doge testnet 1",
+            "rpc_host": "127.0.0.1",
+            "rpc_password": "foobar",
+            "rpc_port": 19001,
+            "rpc_username": "rpcuser"
+        },
+        "model": "wallets.wallet",
+        "pk": 1
+    }
+]

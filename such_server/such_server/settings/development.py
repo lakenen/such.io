@@ -18,6 +18,8 @@ DATABASES = {
     },
 }
 
+MINIMUM_CONFIRMATIONS = 2
+
 # django-debug-toolbar
 if False:
     INSTALLED_APPS += ('debug_toolbar',)

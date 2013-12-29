@@ -80,6 +80,9 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+    'core',
+    'wallets',
 )
 
 LOGGING = {
@@ -105,6 +108,10 @@ LOGGING = {
         }
     },
     'loggers': {
+        '': {
+            'handlers': ['stdout'],
+            'level': 'INFO',
+        },
         'django.request': {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
@@ -121,3 +128,6 @@ REST_FRAMEWORK = {
 
 BROKER_URL = 'redis://127.0.0.1:6379/0'
 CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
+
+CLEARED_FUNDS_ACCOUNT = 'FUNDS'
+MINIMUM_CONFIRMATIONS = 15
