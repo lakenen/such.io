@@ -62,8 +62,13 @@
     <script src="/scripts/controllers/OrderForm.js"></script>
     <script src="/scripts/directives/orderform.js"></script>
     <script src="/scripts/services/socket.js"></script>
-    <script src="scripts/controllers/login.js"></script>
-    <script src="scripts/directives/login.js"></script>
+    <script src="/scripts/controllers/login.js"></script>
+    <script src="/scripts/directives/login.js"></script>
     <!-- endbuild -->
+
+    <script>
+      angular.module('suchApp')
+        .constant('WS_URL', '{{ ws_url }}');
+    </script>
 </body>
 </html>
