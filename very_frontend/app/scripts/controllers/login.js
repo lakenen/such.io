@@ -7,6 +7,13 @@ angular.module('suchApp')
     $scope.showSignup = false;
     $scope.loading = false;
     $scope.login = function () {
+      $scope.$broadcast('autofill:update');
+      console.dir($scope.loginForm);
+      // might have been autocompleted...
+      if (!$scope.user.email || !$scope.user.password) {
+        //$scope.user.email = $scope.loginForm.email;
+
+      }
       $scope.loading = true;
       $http.post('/login', $scope.user)
         .success(loginSuccess)
