@@ -1,8 +1,8 @@
 'use strict';
 
 angular.module('suchApp')
-  .directive('orderList', function () {
+  .directive('orderList', function (STATIC_URL) {
     return {
-      templateUrl: '/views/orderlist.html'
+      templateUrl: STATIC_URL + 'views/orderlist.html'
     };
   });

@@ -5,7 +5,7 @@ admin.autodiscover()
 
 urlpatterns = patterns('',
     # Examples:
-    # url(r'^$', 'such_server.views.home', name='home'),
+    url(r'^$', 'core.views.the_app'),
     # url(r'^blog/', include('blog.urls')),
 
     url(r'^admin/', include(admin.site.urls)),

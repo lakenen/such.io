@@ -43,7 +43,10 @@ MEDIA_URL = '/media/'
 
 STATIC_ROOT = ''
 STATIC_URL = '/static/'
-STATICFILES_DIRS = ()
+STATICFILES_DIRS = (
+    os.path.join(PROJECT_DIR, '../very_frontend/app'),
+    os.path.join(PROJECT_DIR, '../very_frontend/.tmp'),
+)
 STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
@@ -68,7 +71,7 @@ ROOT_URLCONF = 'such_server.urls'
 WSGI_APPLICATION = 'such_server.wsgi.application'
 
 TEMPLATE_DIRS = (
-    os.path.join(PROJECT_DIR, 'templates'),
+    os.path.join(PROJECT_DIR, '../very_frontend/app'),
 )
 
 INSTALLED_APPS = (
