@@ -1,6 +1,7 @@
 import json
 from django.contrib.auth import authenticate, login
 from django.http import HttpResponse
+from django.utils.timezone import now
 from django.shortcuts import render
 
 
@@ -24,5 +25,7 @@ def login_user(request):
 
 
 def the_app(request):
-    context = {}
+    context = {
+        'year': now().year
+    }
     return render(request, 'index.html', context)
