@@ -11,11 +11,11 @@ angular.module('suchApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute'])
         templateUrl: STATIC_URL + 'views/main.html',
         controller: 'MainCtrl'
       })
-      .when('/login', {
-        templateUrl: STATIC_URL + 'views/login.html',
-        controller: 'LoginCtrl'
-      })
       .otherwise({
         redirectTo: '/'
       });
+  })
+  .run(function ($http, $cookies) {
+    // For CSRF token compatibility with Django
+    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   });

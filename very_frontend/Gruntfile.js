@@ -85,6 +85,7 @@ module.exports = function (grunt) {
       },
       livereload: {
         options: {
+          port: '<%= connect.options.livereload %>',
           open: true,
           base: [
             '.tmp',
