@@ -6,8 +6,9 @@ from django.shortcuts import render
 
 
 def login_user(request):
-    email = request.POST.get('email')
-    password = request.POST.get('password')
+    contents = json.loads(request.read())
+    email = contents.get('email')
+    password = contents.get('password')
     user = authenticate(email=email, password=password)
     if user is not None:
         if user.is_active:

@@ -7,6 +7,9 @@ from django.utils.http import urlquote
 from django.utils.translation import ugettext_lazy as _
 
 
+# based on http://www.caktusgroup.com/blog/2013/08/07/migrating-custom-user-model-django/
+
+
 class EmailUserManager(BaseUserManager):
     def _create_user(self, email, password,
                      is_staff, is_superuser, **extra_fields):
