@@ -4,6 +4,11 @@ from django.core.exceptions import ImproperlyConfigured
 from ..environment import VARIABLE_PREFIX
 
 
+from redis.connection import PythonParser
+from realtime.monkey import read
+PythonParser.read = read
+
+
 def get_env_variable(var_name, prefix=VARIABLE_PREFIX, as_bool=False):
     """
     Get the environment variable or raise exception
@@ -73,6 +78,7 @@ ROOT_URLCONF = 'such_server.urls'
 WSGI_APPLICATION = 'such_server.wsgi.application'
 
 TEMPLATE_DIRS = (
+    os.path.join(PROJECT_DIR, 'templates'),
     os.path.join(PROJECT_DIR, '../very_frontend/app'),
 )
 
@@ -85,6 +91,8 @@ INSTALLED_APPS = (
     'django.contrib.staticfiles',
     'django.contrib.admin',
     'django.contrib.admindocs',
+
+    'ws4redis',
 
     'users',
     'core',
@@ -137,3 +145,12 @@ CELERY_RESULT_BACKEND = 'redis://127.0.0.1:6379/1'
 
 CLEARED_FUNDS_ACCOUNT = 'FUNDS'
 MINIMUM_CONFIRMATIONS = 15
+
+WEBSOCKET_URL = '/wows/'
+WS4REDIS_CONNECTION = {
+    'host': '127.0.0.1',
+    'port': 6379,
+    'db': 0,
+    'password': None,
+}
+WS4REDIS_STORE = 'realtime.store.SuchRedisStore'

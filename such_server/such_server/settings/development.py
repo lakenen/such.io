@@ -27,3 +27,5 @@ if False:
     DEBUG_TOOLBAR_CONFIG = {
         'SHOW_TOOLBAR_CALLBACK': lambda r: True,
     }
+
+WSGI_APPLICATION = 'such_server.websockets_wsgi.application'
