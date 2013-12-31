@@ -66,6 +66,8 @@ MIDDLEWARE_CLASSES = (
     'django.middleware.clickjacking.XFrameOptionsMiddleware',
 )
 
+AUTH_USER_MODEL = 'users.EmailUser'
+
 ROOT_URLCONF = 'such_server.urls'
 
 WSGI_APPLICATION = 'such_server.wsgi.application'
@@ -84,6 +86,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     'django.contrib.admindocs',
 
+    'users',
     'core',
     'wallets',
 )

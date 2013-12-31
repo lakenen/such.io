@@ -1,24 +1,6 @@
 [
     {
         "fields": {
-            "date_joined": "2013-12-24T19:42:16.534Z",
-            "email": "m@b.com",
-            "first_name": "",
-            "groups": [],
-            "is_active": true,
-            "is_staff": true,
-            "is_superuser": true,
-            "last_login": "2013-12-24T19:42:25.712Z",
-            "last_name": "",
-            "password": "pbkdf2_sha256$12000$uLj5UMkSnWQ7$JWtWOJ7r8V+WE/tPBUxw26jx1svixUNc9mUx+54lOJM=",
-            "user_permissions": [],
-            "username": "matt"
-        },
-        "model": "auth.user",
-        "pk": 1
-    },
-    {
-        "fields": {
             "user": 1
         },
         "model": "core.userprofile",

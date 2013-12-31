@@ -1,6 +1,6 @@
 from decimal import Decimal
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -27,7 +27,7 @@ class Currency(models.Model):
 
 
 class Balance(models.Model):
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     currency = models.ForeignKey('Currency')
     cleared_amount = CoinAmountField()
 
@@ -77,7 +77,7 @@ class Order(models.Model):
         CANCELLED   = 3
     STATUS_CHOICES = [(STATUS.__dict__[name], name) for name in dir(STATUS) if not name.startswith('_')]
 
-    user = models.ForeignKey(User)
+    user = models.ForeignKey(settings.AUTH_USER_MODEL)
     exchange = models.ForeignKey('Exchange')
     status = models.IntegerField(choices=STATUS_CHOICES)
     type = models.IntegerField(choices=TYPE_CHOICES)
@@ -91,7 +91,7 @@ class Order(models.Model):
     filled_rate = CoinAmountField(null=True, blank=True)
 
 
-@receiver(post_save, sender=User)
+@receiver(post_save, sender=get_user_model())
 def create_user_profile(sender, **kwargs):
     user = kwargs['instance']
 
@@ -99,7 +99,7 @@ def create_user_profile(sender, **kwargs):
     if kwargs['raw']:
         return
 
-    # only create user profile if the User is being created
+    # only create user profile if the user is being created
     if not kwargs['created']:
         return
 
