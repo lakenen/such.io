@@ -1,20 +1,14 @@
 'use strict';
 
 angular.module('suchApp')
-  .controller('LoginCtrl', function ($scope, $http) {
+  .controller('LoginCtrl', ['$scope', '$http', '$cookies', 'User', function ($scope, $http, $cookies, User) {
     $scope.loggedIn = false;
-    $scope.user = {};
+    $scope.user = User;
     $scope.showSignup = false;
-    $scope.loading = false;
+    $scope.isLoading = false;
     $scope.login = function () {
       $scope.$broadcast('autofill:update');
-      console.dir($scope.loginForm);
-      // might have been autocompleted...
-      if (!$scope.user.email || !$scope.user.password) {
-        //$scope.user.email = $scope.loginForm.email;
-
-      }
-      $scope.loading = true;
+      $scope.isLoading = true;
       $http.post('/login', $scope.user)
         .success(loginSuccess)
         .error(loginFail);
@@ -25,35 +19,51 @@ angular.module('suchApp')
         .error(signupFail);
     };
     $scope.logout = function () {
-      $scope.loginForm.$setPristine();
-      $scope.loggedIn = false;
-      $scope.showSignup = false;
-      $scope.user = {};
+      $scope.isLoading = true;
+      $http.post('/logout')
+        .finally(function () {
+          User.isLogged = false;
+          $scope.isLoading = false;
+          $scope.loginForm.$setPristine();
+          $scope.showSignup = false;
+        });
     };
 
-    function loginSuccess(data) {
+    function loginSuccess(data, status, headers) {
       console.log(data);
-      $scope.loading = false;
-      $scope.loggedIn = true;
+      $scope.isLoading = false;
+      User.isLogged = true;
+      console.log(headers('Set-Cookie'));
+      $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken = getCookie('csrftoken');
+      delete User.password;
     }
 
     function loginFail(data, status) {
       console.log(data, status);
-      $scope.loading = false;
-      $scope.loggedIn = false;
+      $scope.isLoading = false;
+      User.isLogged = false;
       $scope.error = 'Invalid email or password';
     }
 
     function signupSuccess(data) {
       console.log(data);
-      $scope.loading = false;
-      $scope.loggedIn = true;
+      $scope.isLoading = false;
+      User.isLogged = true;
+      delete User.password;
     }
 
     function signupFail(data, status) {
       console.log(data, status);
-      $scope.loading = false;
-      $scope.loggedIn = false;
+      $scope.isLoading = false;
+      User.isLogged = false;
       $scope.error = 'Invalid email or password';
     }
-  });
+
+    function getCookie(name) {
+      var value = '; ' + document.cookie;
+      var parts = value.split('; ' + name + '=');
+      if (parts.length === 2) {
+        return parts.pop().split(';').shift();
+      }
+    }
+  }]);

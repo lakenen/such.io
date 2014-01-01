@@ -1,8 +1,8 @@
 import json
-from django.contrib.auth import authenticate, login
+from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.utils.timezone import now
-from django.shortcuts import render
+from django.shortcuts import render, redirect
 
 
 def login_user(request):
@@ -24,9 +24,20 @@ def login_user(request):
     }
     return HttpResponse(json.dumps(data), content_type='application/json', status=401)
 
+def logout_user(request):
+    logout(request)
+    if request.method == 'GET':
+        return redirect('/')
+    return HttpResponse(status=204)
 
 def the_app(request):
     context = {
-        'year': now().year
+        'year': now().year,
+        'user': None
     }
+    if request.user.is_authenticated():
+        context['user'] = {
+            'email': request.user.email,
+        }
+
     return render(request, 'index.html', context)

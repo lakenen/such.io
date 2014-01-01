@@ -69,12 +69,19 @@
     <script src="{{STATIC_URL}}scripts/controllers/login.js"></script>
     <script src="{{STATIC_URL}}scripts/directives/login.js"></script>
     <script src="{{STATIC_URL}}scripts/directives/autofill.js"></script>
+    <script src="{{STATIC_URL}}scripts/services/user.js"></script>
     <!-- endbuild -->
 
     <script>
       angular.module('suchApp')
         .constant('STATIC_URL', '{{STATIC_URL}}')
-        .constant('WS_URL', '{{ ws_url }}');
+        .constant('WS_URL', '{{ ws_url }}')
+        {% if user %}
+        .run(['User', function (User) {
+          User.isLogged = true;
+          User.email = '{{ user.email }}';
+        }]);
+        {% endif %}
     </script>
 </body>
 </html>

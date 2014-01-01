@@ -16,6 +16,7 @@ angular.module('suchApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute'])
       });
   })
   .run(function ($http, $cookies) {
+    console.log($cookies.csrftoken);
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
   });
