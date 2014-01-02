@@ -3,8 +3,10 @@ from django.contrib.auth import authenticate, login, logout
 from django.http import HttpResponse
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
+from django.views.decorators.csrf import ensure_csrf_cookie
 
 
+@ensure_csrf_cookie
 def login_user(request):
     contents = json.loads(request.read())
     email = contents.get('email')
@@ -30,6 +32,7 @@ def logout_user(request):
         return redirect('/')
     return HttpResponse(status=204)
 
+@ensure_csrf_cookie
 def the_app(request):
     context = {
         'year': now().year,
