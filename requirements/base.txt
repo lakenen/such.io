@@ -1,1 +1,4 @@
 Django==1.6.1
+bitcoin-python==0.3
+django-bitcoin==0.2
+djangorestframework==2.3.10

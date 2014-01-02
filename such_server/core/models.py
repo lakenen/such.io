@@ -6,6 +6,24 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 
 
+class TimeStampedModel(models.Model):
+    """
+    An abstract base class model that provides self-updating
+    ``created_at`` and ``modified_at`` fields.
+    """
+
+    created_at = models.DateTimeField(auto_now_add=True)
+    modified_at = models.DateTimeField(auto_now=True)
+
+    class Meta(object):
+        abstract = True
+
+    def save(self, *args, **kwargs):
+        if 'update_fields' in kwargs:
+            kwargs['update_fields'] = list(kwargs['update_fields']) + ['modified_at']
+        super(TimeStampedModel, self).save(*args, **kwargs)
+
+
 class CoinAmountField(models.DecimalField):
     def __init__(self, *args, **kwargs):
         kwargs['max_digits'] = 16
@@ -55,40 +73,6 @@ class Transaction(models.Model):
 
     def __unicode__(self):
         return '<%s: %s %s>' % (self.__class__.__name__, self.get_type_display(), self.amount)
-
-
-class Exchange(models.Model):
-    base_currency = models.ForeignKey('Currency', related_name='+')
-    market_currency = models.ForeignKey('Currency', related_name='+')
-
-    def __unicode__(self):
-        return '<%s: %s/%s>' % (self.__class__.__name__, self.base_currency.symbol, self.market_currency.symbol)
-
-
-class Order(models.Model):
-    class TYPE:
-        BUY         = 1
-        SELL        = 2
-    TYPE_CHOICES = [(TYPE.__dict__[name], name) for name in dir(TYPE) if not name.startswith('_')]
-
-    class STATUS:
-        OPEN        = 1
-        FILLED      = 2
-        CANCELLED   = 3
-    STATUS_CHOICES = [(STATUS.__dict__[name], name) for name in dir(STATUS) if not name.startswith('_')]
-
-    user = models.ForeignKey(settings.AUTH_USER_MODEL)
-    exchange = models.ForeignKey('Exchange')
-    status = models.IntegerField(choices=STATUS_CHOICES)
-    type = models.IntegerField(choices=TYPE_CHOICES)
-    from_partial = models.BooleanField(default=False)
-    opened_at = models.DateTimeField(auto_now_add=True)
-    filled_at = models.DateTimeField(null=True, blank=True)
-    cancelled_at = models.DateTimeField(null=True, blank=True)
-    amount = CoinAmountField()
-    rate = CoinAmountField()
-    filled_amount = CoinAmountField(null=True, blank=True)
-    filled_rate = CoinAmountField(null=True, blank=True)
 
 
 @receiver(post_save, sender=get_user_model())

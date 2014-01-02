@@ -13,5 +13,13 @@
         },
         "model": "core.currency",
         "pk": 1
+    },
+    {
+        "fields": {
+            "name": "bitcoin",
+            "symbol": "BTC"
+        },
+        "model": "core.currency",
+        "pk": 2
     }
 ]

@@ -1,0 +1,73 @@
+[
+    {
+        "fields": {
+            "base_currency": 2,
+            "market_currency": 1
+        },
+        "model": "markets.market",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "cancel_requested_at": null,
+            "cancelled_at": null,
+            "created_at": "2014-01-02T04:39:29.915Z",
+            "filled_amount": "0",
+            "filled_at": null,
+            "filled_rate": "0",
+            "is_partial": false,
+            "market": 1,
+            "modified_at": "2014-01-02T04:39:29.915Z",
+            "amount": "10000",
+            "rate": "7.0E-7",
+            "ordered_at": "2014-01-02T04:39:29.915Z",
+            "status": 1,
+            "type": 1,
+            "user": 1
+        },
+        "model": "markets.order",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "cancel_requested_at": null,
+            "cancelled_at": null,
+            "created_at": "2014-01-02T04:40:01.669Z",
+            "filled_amount": "0",
+            "filled_at": null,
+            "filled_rate": "0",
+            "is_partial": false,
+            "market": 1,
+            "modified_at": "2014-01-02T04:40:01.669Z",
+            "amount": "17000",
+            "rate": "6.8E-7",
+            "ordered_at": "2014-01-02T04:40:01.669Z",
+            "status": 1,
+            "type": 2,
+            "user": 1
+        },
+        "model": "markets.order",
+        "pk": 2
+    },
+    {
+        "fields": {
+            "cancel_requested_at": "2014-01-02T04:40:00Z",
+            "cancelled_at": null,
+            "created_at": "2014-01-02T04:39:29.915Z",
+            "filled_amount": "0",
+            "filled_at": null,
+            "filled_rate": "0",
+            "is_partial": false,
+            "market": 1,
+            "modified_at": "2014-01-02T04:39:29.915Z",
+            "amount": "10000",
+            "rate": "6.9E-7",
+            "ordered_at": "2014-01-02T04:39:29.915Z",
+            "status": 1,
+            "type": 1,
+            "user": 1
+        },
+        "model": "markets.order",
+        "pk": 3
+    }
+]
