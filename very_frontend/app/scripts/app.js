@@ -15,8 +15,11 @@ angular.module('suchApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute'])
         redirectTo: '/'
       });
   })
-  .run(function ($http, $cookies) {
-    console.log($cookies.csrftoken);
+  .run(function ($http, $cookies, $rootScope) {
     // For CSRF token compatibility with Django
     $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    $rootScope.user = $rootScope.user || {
+      isLogged: false,
+      email: ''
+    };
   });

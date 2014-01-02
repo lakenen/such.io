@@ -1,20 +1,20 @@
 'use strict';
 
 angular.module('suchApp')
-  .controller('LoginCtrl', ['$scope', '$http', '$cookies', 'User', function ($scope, $http, $cookies, User) {
-    $scope.loggedIn = false;
-    $scope.user = User;
+  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$cookies', function ($scope, $rootScope, $http, $cookies) {
+    var user = $rootScope.user;
+
     $scope.showSignup = false;
     $scope.isLoading = false;
     $scope.login = function () {
       $scope.$broadcast('autofill:update');
       $scope.isLoading = true;
-      $http.post('/login', $scope.user)
+      $http.post('/login', user)
         .success(loginSuccess)
         .error(loginFail);
     };
     $scope.signup = function () {
-      $http.post('/signup', $scope.user)
+      $http.post('/signup', user)
         .success(signupSuccess)
         .error(signupFail);
     };
@@ -22,40 +22,36 @@ angular.module('suchApp')
       $scope.isLoading = true;
       $http.post('/logout')
         .finally(function () {
-          User.isLogged = false;
+          user.isLogged = false;
           $scope.isLoading = false;
           $scope.loginForm.$setPristine();
           $scope.showSignup = false;
         });
     };
 
-    function loginSuccess(data, status, headers) {
-      console.log(data);
+    function loginSuccess() {
       $scope.isLoading = false;
-      User.isLogged = true;
-      console.log(headers('Set-Cookie'));
+      user.isLogged = true;
+      // update the csrftoken
       $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken = getCookie('csrftoken');
-      delete User.password;
+      delete user.password;
     }
 
-    function loginFail(data, status) {
-      console.log(data, status);
+    function loginFail() {
       $scope.isLoading = false;
-      User.isLogged = false;
+      user.isLogged = false;
       $scope.error = 'Invalid email or password';
     }
 
-    function signupSuccess(data) {
-      console.log(data);
+    function signupSuccess() {
       $scope.isLoading = false;
-      User.isLogged = true;
-      delete User.password;
+      user.isLogged = true;
+      delete user.password;
     }
 
-    function signupFail(data, status) {
-      console.log(data, status);
+    function signupFail() {
       $scope.isLoading = false;
-      User.isLogged = false;
+      user.isLogged = false;
       $scope.error = 'Invalid email or password';
     }
 
