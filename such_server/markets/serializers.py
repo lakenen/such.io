@@ -39,9 +39,12 @@ class ConstantField(serializers.Field):
 
 
 class OrderOutputSerializer(serializers.ModelSerializer):
+    status = serializers.Field(source='get_status_display')
+    type = serializers.Field(source='get_type_display')
+
     class Meta:
         model = Order
-        fields = ['id', 'market', 'type', 'status', 'amount', 'rate', 'is_partial', 'filled_amount', 'filled_rate']
+        exclude = ['user']
         depth = 2
 
 
