@@ -1,23 +1,28 @@
 <div class="order-form">
-  <h2>{{ order.action }} {{ market.market }}</h2>
-  <form ng-submit="order.place()">
+  <h2>{{order.type|capitalize}} {{market.market}}</h2>
+  <a href="#" ng-show="order.type==='sell'" ng-click="setType('buy')">buy</a>
+  <a href="#" ng-show="order.type==='buy'" ng-click="setType('sell')">sell</a>
+  <form ng-submit="placeOrder()">
     <div>
       Quantity: <input type="text" pattern="(?=^\d*(\.\d*)?$)(?=.*[1-9]).*" ng-model="order.quantity" ng-keydown="increment($event)" required />
-      <select ng-model="order.market" ng-change="updateQuantity()">
-        <option>{{ market.market }}</option>
-        <option>{{ market.base }}</option>
+      <select ng-model="order.market" ng-change="updateQuantity(order.market)">
+        <option>{{market.market}}</option>
+        <option>{{market.base}}</option>
       </select>
     </div>
     <div>
-      Price: <input type="text" pattern="(?=^\d*(\.\d*)?$)(?=.*[1-9]).*" ng-model="order.price" required ng-keydown="increment($event)" /> ({{ market.base }})
+      Price: <input type="text" pattern="(?=^\d*(\.\d*)?$)(?=.*[1-9]).*" ng-model="order.rate" required ng-keydown="increment($event)" /> ({{market.base}} / {{market.market}})
     </div>
     <div ng-show="order.market === market.market">
-      Required: <input value="{{ order.quantity * order.price | cryptoCurrency }}" readonly tabindex="-1" /> ({{ market.base }})
+      <span ng-show="showRequired">Required</span><span ng-hide="showRequired">Expected</span>: <input value="{{order.quantity * order.rate|cryptoCurrency}}" readonly tabindex="-1" /> ({{market.base}})
+
+      <div class="summary">You are placing an order to <span class="order-type">{{order.type}}</span> {{order.quantity|cryptoCurrency}}{{market.market}} in exchange for {{order.quantity * order.rate|cryptoCurrency}}{{market.base}}.</div>
     </div>
     <div ng-show="order.market === market.base">
-      Expected: <input value="{{ order.quantity / order.price | cryptoCurrency }}" readonly tabindex="-1" /> ({{ market.market }})
-    </div>
+      <span ng-show="showRequired">Required</span><span ng-hide="showRequired">Expected</span>: <input value="{{order.quantity / order.rate|cryptoCurrency}}" readonly tabindex="-1" /> ({{market.market}})
 
+      <div class="summary">You are placing an order to <span class="order-type">{{order.type}}</span> {{order.quantity / order.rate|cryptoCurrency}}{{market.market}} in exchange for {{order.quantity|cryptoCurrency}}{{market.base}}.</div>
+    </div>
     <button>Place Order</button>
   </form>
 </div>
