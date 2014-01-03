@@ -27,14 +27,15 @@ angular.module('suchApp')
       if (order.market === market.base) {
         quantity /= order.rate;
       }
-      $http.post('/api/orders', {
+      var data = {
         'type': order.type,
         'amount': quantity,
         'rate': order.rate,
         'market': 1
-      })
-        .success(function (data) {
-          console.log(data);
+      };
+      $http.post('/api/orders', data)
+        .success(function (response) {
+          console.log(response);
         });
     };
 

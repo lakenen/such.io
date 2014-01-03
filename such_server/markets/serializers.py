@@ -9,6 +9,7 @@ class OrderOutputSerializer(serializers.ModelSerializer):
     class Meta:
         model = Order
         fields = ['id', 'market', 'type', 'status', 'amount', 'rate', 'is_partial', 'filled_amount', 'filled_rate']
+        depth = 2
 
 
 class OrderInputSerializer(serializers.ModelSerializer):
