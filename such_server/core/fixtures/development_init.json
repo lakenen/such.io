@@ -21,5 +21,23 @@
         },
         "model": "core.currency",
         "pk": 2
+    },
+    {
+        "fields": {
+            "cleared_amount": 10000,
+            "currency": 1,
+            "user": 1
+        },
+        "model": "core.balance",
+        "pk": 1
+    },
+    {
+        "fields": {
+            "cleared_amount": 10000,
+            "currency": 2,
+            "user": 1
+        },
+        "model": "core.balance",
+        "pk": 2
     }
 ]

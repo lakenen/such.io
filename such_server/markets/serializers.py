@@ -1,8 +1,41 @@
 from decimal import Decimal
 from rest_framework import serializers
 
-from .models import Order
+from .models import Order, Market
 from core.models import Balance
+
+
+class MethodField(serializers.Field):
+    """
+    A field that gets its value by calling a method on the serializer it's attached to.
+    """
+
+    def __init__(self, method_name):
+        self.method_name = method_name
+        super(MethodField, self).__init__()
+
+    def field_from_native(self, data, files, field_name, into):
+        value = getattr(self.parent, self.method_name)()
+        into[field_name] = value
+
+    def field_to_native(self, obj, field_name):
+        value = getattr(self.parent, self.method_name)()
+        return self.to_native(value)
+
+
+class ConstantField(serializers.Field):
+    """
+    A field that serializes/deserializer to/from a constant value.
+    """
+    def __init__(self, value='', **kwargs):
+        super(ConstantField, self).__init__(**kwargs)
+        self._const_value = value
+
+    def field_from_native(self, data, files, field_name, into):
+        into[field_name] = self._const_value
+
+    def field_to_native(self, obj, field_name):
+        return self.to_native(self._const_value)
 
 
 class OrderOutputSerializer(serializers.ModelSerializer):
@@ -12,14 +45,22 @@ class OrderOutputSerializer(serializers.ModelSerializer):
         depth = 2
 
 
-class OrderInputSerializer(serializers.ModelSerializer):
-    class Meta:
-        model = Order
-
-    market = serializers.PrimaryKeyRelatedField()
+class OrderInputSerializer(serializers.Serializer):
+    market = serializers.IntegerField()
+    user = MethodField('get_user')
+    status = ConstantField(value=Order.STATUS.OPEN)
     type = serializers.CharField()
     amount = serializers.DecimalField()
     rate = serializers.DecimalField()
+
+    def get_user(self):
+        return self.context['request'].user
+
+    def validate_market(self, attrs, source):
+        market_id = attrs.pop(source)
+        market = Market.objects.get(id=market_id)
+        attrs['market'] = market
+        return attrs
 
     def validate_type(self, attrs, source):
         order_type = attrs[source].lower()
@@ -56,3 +97,7 @@ class OrderInputSerializer(serializers.ModelSerializer):
             raise serializers.ValidationError('Order is too small')
 
         return attrs
+
+    def restore_object(self, attrs, instance=None):
+        order = Order(**attrs)
+        return order
