@@ -19,7 +19,7 @@
         </tr>
       </thead>
       <tbody>
-        <tr ng-repeat="order in orders">
+        <tr ng-repeat="order in orders" class="order-{{order.status|lowercase}}">
           <td>{{order.ordered_at|date:'yyyy-MM-dd HH:mm:ss'}}</td>
           <td>{{order.type}}</td>
           <td>{{order.market.market_currency.symbol}}/{{order.market.base_currency.symbol}}</td>

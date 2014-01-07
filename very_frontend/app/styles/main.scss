@@ -28,3 +28,17 @@ input.ng-dirty.ng-invalid {
 input.ng-valid {
   border: 1px solid green;
 }
+
+.user-orders {
+  font-size: 10pt;
+
+  tr:nth-child(even) {
+    background: #eee;
+  }
+  .order-filled {
+    color: #0c0;
+  }
+  .order-cancelled {
+    color: #ccc;
+  }
+}
