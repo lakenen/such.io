@@ -10,4 +10,20 @@ angular.module('suchApp')
     }
     $rootScope.$on('auth:change', setTemplate);
     setTemplate();
+  })
+  .controller('APITestCtrl', function ($scope, $http) {
+    $scope.url = '';
+    $scope.method = 'GET';
+    $scope.data = '';
+    $scope.submit = function () {
+      $http({
+        url: $scope.url,
+        method: $scope.method,
+        data: $scope.data
+      }).success(function (e) {
+        $scope.response = e;
+      }).error(function (e, s) {
+        $scope.response = s;
+      });
+    };
   });
