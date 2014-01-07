@@ -26,6 +26,7 @@ angular.module('suchApp')
           $scope.isLoading = false;
           $scope.loginForm.$setPristine();
           $scope.showSignup = false;
+          $rootScope.$broadcast('auth:change', false);
         });
     };
 
@@ -35,6 +36,7 @@ angular.module('suchApp')
       // update the csrftoken
       $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken = getCookie('csrftoken');
       delete user.password;
+      $rootScope.$broadcast('auth:change', true);
     }
 
     function loginFail() {

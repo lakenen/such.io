@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('suchApp')
-  .controller('OrderFormCtrl', function ($scope, $rootScope, $filter, $http) {
+  .controller('OrderFormCtrl', function ($scope, $rootScope, $filter, UserOrder) {
     var MAX_QUANTITY = 1e+8;
     var cryptoFilter = $filter('cryptoCurrency');
     var market = {
@@ -27,17 +27,25 @@ angular.module('suchApp')
       if (order.market === market.base) {
         quantity /= order.rate;
       }
-      var data = {
-        'type': order.type,
-        'amount': quantity,
-        'rate': order.rate,
-        'market': 1
-      };
-      $http.post('/api/orders', data)
-        .success(function (response) {
-          console.log(response);
-        });
+      var o = new UserOrder({
+        type: order.type,
+        amount: quantity,
+        rate: order.rate,
+        market: 1
+      });
+      o.$save(saveSuccess, saveFail);
     };
+
+    function saveSuccess(response) {
+      $rootScope.$broadcast('userorder:add', response);
+      $scope.order.quantity = cryptoFilter(0);
+      console.log('order placed!', response);
+    }
+
+    function saveFail(response) {
+      console.error('order failed', response.data);
+      response.data['non_field_errors'].forEach(alert);
+    }
 
     $scope.updateQuantity = function () {
       var qty = parseFloat(order.quantity),
@@ -71,16 +79,14 @@ angular.module('suchApp')
         num = parseInt(val[pos], 10),
         floatNum;
 
-      console.dir(event);
+      //console.dir(event);
       if (num > -1) {
         var v = val.replace(/\d/g, '0');
         v = v.substr(0, pos) + 1 + v.substr(pos + 1);
-        console.log(v, pos, num);
         floatNum = parseFloat(v);
 
         switch (event.keyCode) {
           case 38: // UP
-            console.log(floatVal, floatNum);
             input.value = cryptoFilter(Math.min(MAX_QUANTITY, floatVal + floatNum));
             input.selectionStart = input.selectionEnd = start;
             event.preventDefault();

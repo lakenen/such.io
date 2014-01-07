@@ -15,9 +15,21 @@ angular.module('suchApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute'])
         redirectTo: '/'
       });
   })
+  // .factory('myHttpInterceptor', function() {
+  //   return {
+  //     // optional method
+  //     request: function(cfg) {
+  //       // do something on success
+  //       console.log(cfg);
+  //       return cfg;
+  //     }
+  //   };
+  // })
   .run(function ($http, $cookies, $rootScope) {
     // For CSRF token compatibility with Django
-    $http.defaults.headers.post['X-CSRFToken'] = $cookies.csrftoken;
+    $http.defaults.headers.common['X-CSRFToken'] = $cookies.csrftoken;
+    // $http.interceptors = [];
+    // $http.interceptors.push('myHttpInterceptor');
     $rootScope.user = $rootScope.user || {
       isLogged: false,
       email: ''

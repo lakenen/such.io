@@ -38,8 +38,7 @@ class OrderViewSet(ViewSet):
         output_serializer = OrderOutputSerializer(order)
         return Response(output_serializer.data, status=status.HTTP_202_ACCEPTED)
 
-    @action()
-    def cancel(self, request, pk=None):
+    def destroy(self, request, pk=None):
         try:
             order = Order.objects.get(user=request.user, id=int(pk))
         except Order.DoesNotExist:
@@ -48,6 +47,7 @@ class OrderViewSet(ViewSet):
 
         num_updated = Order.objects.filter(id=int(pk), status=Order.STATUS.OPEN, cancel_requested_at__isnull=True).update(cancel_requested_at=now())
         if num_updated == 1:
+            clear_market(order.market_id)
             return Response(status=status.HTTP_204_NO_CONTENT)
         elif num_updated == 0:
             return Response({'error': 'cannot cancel this order'}, status=status.HTTP_400_BAD_REQUEST)

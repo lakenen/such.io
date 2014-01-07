@@ -2,28 +2,38 @@
     <table>
       <thead>
         <tr>
-          <th>Time</th>
+          <th>Order Date</th>
+          <th>Type</th>
           <th>Market</th>
           <th>Status</th>
           <th>Partial Order</th>
           <th>Requested Amount</th>
           <th>Requested Rate</th>
+          <th>Filled Date</th>
           <th>Filled Amount</th>
           <th>Filled Rate</th>
           <th>Exchange Fee</th>
+          <th>Cancel Requested</th>
+          <th>Cancel Request Date</th>
+          <td></td>
         </tr>
       </thead>
       <tbody>
         <tr ng-repeat="order in orders">
-          <td>{{order.time|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td>{{order.ordered_at|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td>{{order.type}}</td>
           <td>{{order.market.market_currency.symbol}}/{{order.market.base_currency.symbol}}</td>
           <td>{{order.status}}</td>
-          <td>{{order.is_partial|boolean:'yes':'no'}}</td>
-          <td>{{order.amount | cryptoCurrency }}</td>
-          <td>{{order.rate | cryptoCurrency }}</td>
+          <td>{{order.is_partial|boolean:'YES':'NO'}}</td>
+          <td>{{order.amount | cryptoCurrency }} ({{order.market.market_currency.symbol}})</td>
+          <td>{{order.rate | cryptoCurrency }} ({{order.market.base_currency.symbol}})</td>
+          <td>{{order.filled_at|date:'yyyy-MM-dd HH:mm:ss'}}</td>
           <td>{{order.filled_amount | cryptoCurrency }}</td>
           <td>{{order.filled_rate | cryptoCurrency }}</td>
           <td>{{order.tx_fee | cryptoCurrency }}</td>
+          <td>{{order.cancel_requested_at|boolean:'YES':'NO'}}</td>
+          <td>{{order.cancel_requested_at|date:'yyyy-MM-dd HH:mm:ss'}}</td>
+          <td><button ng-show="order.status === 'OPEN'" ng-click="requestCancel(order.id)">request cancel</button></td>
         </tr>
       </tbody>
     </table>
