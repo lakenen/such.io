@@ -1,5 +1,6 @@
 from django.conf import settings
 from django.db import models
+from django.db.models import Sum
 
 from core.models import TimeStampedModel, CoinAmountField
 
@@ -10,6 +11,20 @@ class Market(models.Model):
 
     def __unicode__(self):
         return '<%s: %s/%s>' % (self.__class__.__name__, self.base_currency.symbol, self.market_currency.symbol)
+
+    def open_sells(self):
+        return self.order_set.filter(status=Order.STATUS.OPEN, type=Order.TYPE.SELL)
+
+    def open_buys(self):
+        return self.order_set.filter(status=Order.STATUS.OPEN, type=Order.TYPE.BUY)
+
+    def get_aggregated_open_orders(self):
+        buys = self.open_buys().values('rate').annotate(amount=Sum('amount')).order_by('-rate')
+        sells = self.open_sells().values('rate').annotate(amount=Sum('amount')).order_by('rate')
+        return {
+            'buy': buys,
+            'sell': sells,
+        }
 
 
 class Order(TimeStampedModel):

@@ -5,7 +5,7 @@ from .models import Market, Order
 
 
 def _open_orders(market, **kwargs):
-    return Order.objects.filter(market_id=market.id, status=Order.STATUS.OPEN, **kwargs)
+    return market.order_set.filter(status=Order.STATUS.OPEN, **kwargs)
 
 
 def do_transaction(buy, sell):

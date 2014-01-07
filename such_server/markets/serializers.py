@@ -38,6 +38,14 @@ class ConstantField(serializers.Field):
         return self.to_native(self._const_value)
 
 
+class MarketOutputSerializer(serializers.ModelSerializer):
+    aggregated_open_orders = serializers.Field(source='get_aggregated_open_orders')
+
+    class Meta:
+        model = Market
+        depth = 2
+
+
 class OrderOutputSerializer(serializers.ModelSerializer):
     status = serializers.Field(source='get_status_display')
     type = serializers.Field(source='get_type_display')

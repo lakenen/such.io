@@ -1,12 +1,24 @@
 from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.decorators import action
+from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
-from .models import Order
+from .models import Order, Market
 from .serializers import OrderInputSerializer, OrderOutputSerializer
+from .serializers import MarketOutputSerializer
 from .tasks import clear_market
+
+
+class MarketViewSet(ViewSet):
+    model = Market
+    permission_classes = [AllowAny]
+
+    def list(self, reqeust):
+        markets = Market.objects.filter()
+        output_serializer = MarketOutputSerializer(markets, many=True)
+        return Response(output_serializer.data)
 
 
 class OrderViewSet(ViewSet):
