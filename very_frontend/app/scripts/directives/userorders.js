@@ -1,9 +1,9 @@
 'use strict';
 
 angular.module('suchApp')
-  .directive('userOrders', function (UserOrder, STATIC_URL) {
+  .directive('userOrders', function (UserOrder) {
     return {
-      templateUrl: STATIC_URL + 'views/userorders.html',
+      templateUrl: 'userorders.html',
       link: function ($scope) {
         function refresh() {
           $scope.orders = UserOrder.query();
