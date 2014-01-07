@@ -1,6 +1,5 @@
 from django.utils.timezone import now
 from rest_framework import status
-from rest_framework.decorators import action
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
@@ -19,6 +18,16 @@ class MarketViewSet(ViewSet):
         markets = Market.objects.filter()
         output_serializer = MarketOutputSerializer(markets, many=True)
         return Response(output_serializer.data)
+
+    def retrieve(self, request, pk=None):
+        try:
+            market = Market.objects.get(id=int(pk))
+        except Market.DoesNotExist:
+            return Response({'error': 'market not found'}, status=status.HTTP_404_NOT_FOUND)
+
+        output_serializer = MarketOutputSerializer(market)
+        return Response(output_serializer.data)
+
 
 
 class OrderViewSet(ViewSet):
