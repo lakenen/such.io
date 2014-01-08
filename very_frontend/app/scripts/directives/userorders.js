@@ -10,7 +10,17 @@ angular.module('suchApp')
         }
         $scope.$on('userorder:add', refresh);
         $scope.requestCancel = function (id) {
-          UserOrder.cancel({ orderId: id }, refresh);
+          UserOrder.cancel({ orderId: id })
+            .$promise
+            .then(function () {
+              alert('cancel requested');
+            })
+            .catch(function (res) {
+              alert(res.data.error);
+            })
+            .finally(function () {
+              refresh();
+            });
         };
         refresh();
       }

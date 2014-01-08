@@ -3,6 +3,7 @@ from rest_framework import serializers
 
 from .models import Order, Market
 from core.models import Balance
+from core import models
 
 
 class MethodField(serializers.Field):
@@ -38,6 +39,13 @@ class ConstantField(serializers.Field):
         return self.to_native(self._const_value)
 
 
+class CoinAmountField(serializers.DecimalField):
+    def __init__(self, value='', **kwargs):
+        kwargs['max_digits'] = models.CoinAmountField.MAX_DIGITS
+        kwargs['decimal_places'] = models.CoinAmountField.DECIMAL_PLACES
+        super(CoinAmountField, self).__init__(value, **kwargs)
+
+
 class MarketOutputSerializer(serializers.ModelSerializer):
     aggregated_open_orders = serializers.Field(source='get_aggregated_open_orders')
 
@@ -61,8 +69,8 @@ class OrderInputSerializer(serializers.Serializer):
     user = MethodField('get_user')
     status = ConstantField(value=Order.STATUS.OPEN)
     type = serializers.CharField()
-    amount = serializers.DecimalField()
-    rate = serializers.DecimalField()
+    amount = CoinAmountField()
+    rate = CoinAmountField()
 
     def get_user(self):
         return self.context['request'].user

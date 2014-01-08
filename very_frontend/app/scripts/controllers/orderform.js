@@ -44,7 +44,13 @@ angular.module('suchApp')
 
     function saveFail(response) {
       console.error('order failed', response.data);
-      response.data['non_field_errors'].forEach(alert);
+      if (response.data.non_field_errors) {
+        response.data.non_field_errors.forEach(alert);
+      } else {
+        for (var p in response.data) {
+          response.data[p].forEach(alert);
+        }
+      }
     }
 
     $scope.updateQuantity = function () {
