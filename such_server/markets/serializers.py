@@ -108,7 +108,7 @@ class OrderInputSerializer(serializers.Serializer):
             raise Exception('Unexpected order type %s' % attrs['type'])
 
         balance = Balance.objects.get(user=attrs['user'], currency=sell_currency)
-        if balance.cleared_amount < sell_amount:
+        if balance.amount < sell_amount:
             raise serializers.ValidationError('Insufficient funds')
 
         min_amount = Decimal('0.00000001')

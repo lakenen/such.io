@@ -42,6 +42,10 @@ class UserProfile(models.Model):
 class Currency(models.Model):
     name = models.CharField(max_length=32)
     symbol = models.CharField(max_length=4, unique=True)
+    min_confirmations = models.IntegerField()
+
+    def is_enough_confirmations(self, confirmations):
+        return confirmations >= self.min_confirmations
 
     def __unicode__(self):
         return '<%s: %s>' % (self.__class__.__name__, self.symbol)
@@ -50,32 +54,10 @@ class Currency(models.Model):
 class Balance(models.Model):
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
     currency = models.ForeignKey('Currency')
-    cleared_amount = CoinAmountField()
-
-    def __unicode__(self):
-        return '<%s: %s %s %s>' % (self.__class__.__name__, self.user.username, self.cleared_amount, self.currency.symbol)
-
-
-class Transaction(models.Model):
-    class TYPE:
-        DEPOSIT         = 1
-        WITHDRAW        = 2
-        WITHDRAW_FEE    = 4
-        TRADE_FEE       = 5
-    TYPE_CHOICES = [(TYPE.__dict__[name], name) for name in dir(TYPE) if not name.startswith('_')]
-
-    type = models.IntegerField(choices=TYPE_CHOICES)
-    address = models.ForeignKey('wallets.DepositAddress')
-    tx_id = models.CharField(max_length=64, unique=True)
     amount = CoinAmountField()
-    is_cleared = models.BooleanField(default=False)
-
-    @classmethod
-    def is_enough_confirmations(cls, confirmations):
-        return confirmations >= settings.MINIMUM_CONFIRMATIONS
 
     def __unicode__(self):
-        return '<%s: %s %s>' % (self.__class__.__name__, self.get_type_display(), self.amount)
+        return '<%s: %s %s %s>' % (self.__class__.__name__, self.user.email, self.amount, self.currency.symbol)
 
 
 @receiver(post_save, sender=get_user_model())

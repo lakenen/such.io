@@ -8,6 +8,7 @@
     },
     {
         "fields": {
+            "min_confirmations": 2,
             "name": "dogecoin",
             "symbol": "DOGE"
         },
@@ -16,6 +17,7 @@
     },
     {
         "fields": {
+            "min_confirmations": 3,
             "name": "bitcoin",
             "symbol": "BTC"
         },
@@ -24,7 +26,7 @@
     },
     {
         "fields": {
-            "cleared_amount": 10000,
+            "amount": 10000,
             "currency": 1,
             "user": 1
         },
@@ -33,7 +35,7 @@
     },
     {
         "fields": {
-            "cleared_amount": 10000,
+            "amount": 10000,
             "currency": 2,
             "user": 1
         },

@@ -1,6 +1,6 @@
 from django.contrib import admin
 
-from .models import UserProfile, Currency, Balance, Transaction
+from .models import UserProfile, Currency, Balance
 
 
 class UserProfileAdmin(admin.ModelAdmin):
@@ -14,10 +14,5 @@ admin.site.register(Currency, CurrencyAdmin)
 
 
 class BalanceAdmin(admin.ModelAdmin):
-    list_display = ['user', 'currency', 'cleared_amount']
+    list_display = ['user', 'currency', 'amount']
 admin.site.register(Balance, BalanceAdmin)
-
-
-class TransactionAdmin(admin.ModelAdmin):
-    list_display = ['type', 'address', 'tx_id', 'amount', 'is_cleared']
-admin.site.register(Transaction, TransactionAdmin)

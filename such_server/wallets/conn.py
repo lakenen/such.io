@@ -24,18 +24,19 @@ class WalletConnection(object):
     def get_new_address(self, user):
         return self._conn.getnewaddress(self._get_account_name(user))
 
-    def get_receives(self):
+    def get_transactions_since(self, tx_id):
         count = 100
         start = 0
+
         def get_transactions(count, start):
             return self._conn.listtransactions('*', count, start)
 
         txs = get_transactions(count, start)
         while len(txs) > 0:
-            txs.sort(key=lambda tx: tx.time, reverse=True)
             for tx in txs:
-                if tx.category == 'receive':
-                    yield tx
+                if tx.txid == tx_id:
+                    return
+                yield tx
             start += count
             txs = get_transactions(count, start)
 
