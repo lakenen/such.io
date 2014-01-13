@@ -35,10 +35,14 @@ input.ng-valid {
   tr:nth-child(even) {
     background: #eee;
   }
+  .order-open {
+    color: #9d0;
+    font-weight: bold;
+  }
   .order-filled {
     color: #0c0;
   }
   .order-cancelled {
-    color: #ccc;
+    color: #aaa;
   }
 }
