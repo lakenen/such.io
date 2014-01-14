@@ -33,7 +33,8 @@ class WalletConnection(object):
 
         txs = get_transactions(count, start)
         while len(txs) > 0:
-            for tx in txs:
+            #NOTE txs are returned oldest first, but we want newest first
+            for tx in reversed(txs):
                 if tx.txid == tx_id:
                     return
                 yield tx

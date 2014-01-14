@@ -33,9 +33,9 @@ class Wallet(models.Model):
 class Transaction(models.Model):
     class TYPE:
         DEPOSIT         = 1
-        WITHDRAW        = 2
-        WITHDRAW_FEE    = 4
-        TRADE_FEE       = 5
+        WITHDRAWAL      = 2
+        WITHDRAWAL_FEE  = 3
+        TRADE_FEE       = 4
     TYPE_CHOICES = [(TYPE.__dict__[name], name) for name in dir(TYPE) if not name.startswith('_')]
 
     type = models.IntegerField(choices=TYPE_CHOICES)
