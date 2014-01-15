@@ -39,7 +39,7 @@ class Order(TimeStampedModel):
     class STATUS:
         OPEN        = 1
         FILLED      = 2
-        CANCELLED   = 3
+        CANCELED    = 3
     STATUS_CHOICES = [(STATUS.__dict__[name], name) for name in dir(STATUS) if not name.startswith('_')]
 
     user = models.ForeignKey(settings.AUTH_USER_MODEL)
@@ -50,7 +50,7 @@ class Order(TimeStampedModel):
     ordered_at = models.DateTimeField()
     filled_at = models.DateTimeField(null=True, blank=True)
     cancel_requested_at = models.DateTimeField(null=True, blank=True)
-    cancelled_at = models.DateTimeField(null=True, blank=True)
+    canceled_at = models.DateTimeField(null=True, blank=True)
     amount = CoinAmountField()
     rate = CoinAmountField()
     filled_amount = CoinAmountField(null=True, blank=True)

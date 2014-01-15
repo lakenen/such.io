@@ -123,5 +123,5 @@ def clear_market(market):
 
     # fulfill order cancellation requests
     update_query = market.open_orders().filter(cancel_requested_at__isnull=False)
-    num_cancelled = update_query.update(status=Order.STATUS.CANCELLED, cancelled_at=now())
-    logger.info('cancelled %d orders' % num_cancelled)
+    num_canceled = update_query.update(status=Order.STATUS.CANCELED, canceled_at=now())
+    logger.info('canceled %d orders' % num_canceled)
