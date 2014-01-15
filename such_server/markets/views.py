@@ -34,7 +34,7 @@ class OrderViewSet(ViewSet):
     model = Order
 
     def list(self, request):
-        orders = Order.objects.filter(user=request.user).order_by('-modified_at')[:30]
+        orders = Order.objects.filter(user=request.user).order_by('-modified_at')
         output_serializer = OrderOutputSerializer(orders, many=True)
         return Response(output_serializer.data)
 
@@ -66,7 +66,12 @@ class OrderViewSet(ViewSet):
             return Response({'error': 'order does not exist'}, status=status.HTTP_404_NOT_FOUND)
 
 
-        num_updated = Order.objects.filter(id=int(pk), status=Order.STATUS.OPEN, cancel_requested_at__isnull=True).update(cancel_requested_at=now())
+        num_updated = Order.objects.filter(
+                id=int(pk),
+                status=Order.STATUS.OPEN,
+                cancel_requested_at__isnull=True
+        ).update(cancel_requested_at=now())
+
         if num_updated == 1:
             clear_market(order.market_id)
             return Response(status=status.HTTP_204_NO_CONTENT)

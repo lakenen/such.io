@@ -1,4 +1,5 @@
 from decimal import Decimal
+from django.utils.timezone import now
 from rest_framework import serializers
 
 from .models import Order, Market
@@ -65,9 +66,10 @@ class OrderOutputSerializer(serializers.ModelSerializer):
 
 
 class OrderInputSerializer(serializers.Serializer):
-    market = serializers.IntegerField()
     user = MethodField('get_user')
     status = ConstantField(value=Order.STATUS.OPEN)
+
+    market = serializers.IntegerField()
     type = serializers.CharField()
     amount = CoinAmountField()
     rate = CoinAmountField()
@@ -118,5 +120,6 @@ class OrderInputSerializer(serializers.Serializer):
         return attrs
 
     def restore_object(self, attrs, instance=None):
+        attrs['ordered_at'] = now()
         order = Order(**attrs)
         return order

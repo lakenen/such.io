@@ -1,11 +1,11 @@
+import logging
 from django.db import transaction
 from django.utils.timezone import now
 
 from .models import Market, Order
 
 
-def _open_orders(market, **kwargs):
-    return market.order_set.filter(status=Order.STATUS.OPEN, **kwargs)
+logger = logging.getLogger(__name__)
 
 
 def do_transaction(buy, sell):
@@ -13,42 +13,47 @@ def do_transaction(buy, sell):
     assert buy.type == Order.TYPE.BUY
     assert sell.type == Order.TYPE.SELL
     assert sell.rate <= buy.rate
-
+    logger.info('clearing %s and %s' % (buy, sell))
 
     try:
         with transaction.atomic():
 
             new_buy, new_sell = None, None
+            # make a partial buy order
             if buy.amount > sell.amount:
                 new_buy = buy.clone()
                 new_buy.amount = buy.amount - sell.amount
                 new_buy.save()
+                logger.info('generating partial buy: %s' % new_buy)
 
                 buy.is_partial = True
-                buy.filled_amount = \
+
+                buy.filled_amount = sell.amount
                 sell.filled_amount = sell.amount
 
+            # make a partial sell order
             elif buy.amount < sell.amount:
                 new_sell = sell.clone()
                 new_sell.amount = sell.amount - buy.amount
                 new_sell.save()
+                logger.info('generating partial sell: %s' % new_sell)
 
                 sell.is_partial = True
-                buy.filled_amount = \
+
+                buy.filled_amount = buy.amount
                 sell.filled_amount = buy.amount
 
+            # exact match. wow
             else:
-                buy.filled_amount = \
+                buy.filled_amount = buy.amount
                 sell.filled_amount = buy.amount
 
             buy.status = Order.STATUS.FILLED
             sell.status = Order.STATUS.FILLED
 
-            buy.filled_at = \
-            sell.filled_at = now()
+            buy.filled_at = sell.filled_at = now()
 
-            buy.filled_rate = \
-            sell.filled_rate = sell.rate
+            buy.filled_rate = sell.filled_rate = sell.rate
 
             buy.save()
             sell.save()
@@ -61,31 +66,40 @@ def do_transaction(buy, sell):
 
 def _fill_orders(market):
     try:
-        best_sell = _open_orders(market, type=Order.TYPE.SELL).order_by('rate')[0]
-        best_buy = _open_orders(market, type=Order.TYPE.BUY).order_by('-rate')[0]
+        best_sell = market.open_sells().order_by('rate')[0]
+        best_buy = market.open_buys().order_by('-rate')[0]
     except IndexError:
         # there are either no open buys or no open sells, so nothing to do
         return
 
-    clearable_sells = list(_open_orders(market, type=Order.TYPE.SELL, rate__lte=best_buy.rate).order_by('ordered_at', 'rate'))
-    clearable_buys = list(_open_orders(market, type=Order.TYPE.BUY, rate__gte=best_sell.rate).order_by('ordered_at', '-rate'))
+    clearable_sells = list(market.open_sells().filter(rate__lte=best_buy.rate).order_by('ordered_at', 'rate'))
+    clearable_buys = list(market.open_buys().filter(rate__gte=best_sell.rate).order_by('ordered_at', '-rate'))
 
     #TODO optimize the shit out of this
     while len(clearable_buys) > 0:
         buy = clearable_buys[0]
-
+        logger.info('BUY = %s' % buy)
         buy_cleared = False
-        for index, sell in enumerate(clearable_sells):
+
+        index = 0
+        while index < len(clearable_sells):
+            sell = clearable_sells[index]
+            logger.info('SELL = %s' % sell)
+            index += 1
 
             if buy.cancel_requested_at and buy.cancel_requested_at < sell.ordered_at:
-                continue
+                logger.info('skipping a buy due to cancel request')
+                # break instead of continue since sells are sorted by ordered_at ascending
+                break
 
             if sell.cancel_requested_at and sell.cancel_requested_at < buy.ordered_at:
+                logger.info('skipping a sell due to cancel request')
                 continue
 
             if sell.rate <= buy.rate:
                 buy_cleared = True
                 new_buy, new_sell = do_transaction(buy, sell)
+                index -= 1
                 if new_buy:
                     clearable_buys[0] = new_buy
                     clearable_sells.pop(index)
@@ -95,6 +109,7 @@ def _fill_orders(market):
                 else:
                     clearable_buys.pop(0)
                     clearable_sells.pop(index)
+                break
 
         if not buy_cleared:
             clearable_buys.pop(0)
@@ -103,7 +118,10 @@ def clear_market(market):
     if not isinstance(market, Market):
         market = Market.objects.get(id=market)
 
+    # clear open buys and sells
     _fill_orders(market)
 
     # fulfill order cancellation requests
-    _open_orders(market, cancel_requested_at__isnull=False).update(status=Order.STATUS.CANCELLED, cancelled_at=now())
+    update_query = market.open_orders().filter(cancel_requested_at__isnull=False)
+    num_cancelled = update_query.update(status=Order.STATUS.CANCELLED, cancelled_at=now())
+    logger.info('cancelled %d orders' % num_cancelled)

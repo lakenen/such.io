@@ -12,6 +12,9 @@ class Market(models.Model):
     def __unicode__(self):
         return '<%s: %s/%s>' % (self.__class__.__name__, self.base_currency.symbol, self.market_currency.symbol)
 
+    def open_orders(self):
+        return self.order_set.filter(status=Order.STATUS.OPEN)
+
     def open_sells(self):
         return self.order_set.filter(status=Order.STATUS.OPEN, type=Order.TYPE.SELL)
 
@@ -44,7 +47,7 @@ class Order(TimeStampedModel):
     status = models.IntegerField(choices=STATUS_CHOICES)
     type = models.IntegerField(choices=TYPE_CHOICES)
     is_partial = models.BooleanField(default=False)
-    ordered_at = models.DateTimeField(auto_now_add=True)
+    ordered_at = models.DateTimeField()
     filled_at = models.DateTimeField(null=True, blank=True)
     cancel_requested_at = models.DateTimeField(null=True, blank=True)
     cancelled_at = models.DateTimeField(null=True, blank=True)
