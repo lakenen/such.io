@@ -10,7 +10,7 @@ from ..conn import WalletConnection
 logger = logging.getLogger(__name__)
 
 
-def _update_deposit(wallet, conn, tx):
+def _update_receive(wallet, conn, tx):
     assert tx.category == 'receive'
     logger.info('%s: updating receive tx %s.', conn, tx.txid)
 
@@ -43,12 +43,7 @@ def _update_deposit(wallet, conn, tx):
         logger.info('%s is already cleared, nothing to do.', deposit)
         return True
 
-    if tx.confirmations == 0:
-        deposit.is_orphaned = True
-        deposit.save(update_fields=['is_orphaned'])
-        logger.info('transaction %s has zero confirmations, orphaning deposit %s' % (tx.txid, deposit))
-        return
-    elif not deposit.wallet.currency.is_enough_confirmations(tx.confirmations):
+    if not deposit.wallet.currency.is_enough_confirmations(tx.confirmations):
         logging.info('%s only has %s confirmations, which is not enough to clear it.', tx.txid, tx.confirmations)
         return
 
@@ -71,7 +66,7 @@ def _update_deposit(wallet, conn, tx):
         return
 
 
-def _update_withdrawal(wallet, conn, tx):
+def _update_send(wallet, conn, tx):
     assert tx.category == 'send'
     logger.info('%s: updating send tx %s.', conn, tx.txid)
 
@@ -89,23 +84,7 @@ def _update_withdrawal(wallet, conn, tx):
         logger.info('%s is already cleared, nothing to do.', withdrawal)
         return True
 
-    if tx.confirmations == 0:
-        try:
-            with transaction.atomic():
-                logger.info('transaction %s has zero confirmations, orphaning withdrawal %s' % (tx.txid, withdrawal))
-
-                withdrawal.is_orphaned = True
-                withdrawal.save(update_fields=['is_orphaned'])
-
-                balance_query = Balance.objects.filter(id=withdrawal.balance.id)
-                num_updated = balance_query.update(amount=F('amount') + tx.amount)
-                if num_updated != 1:
-                    raise Exception('updated %d rows when clearing %s on %s, aborting.' % (num_updated, withdrawal, withdrawal.balance))
-        except:
-            logger.exception('error while orphaning tx %s' % tx.txid)
-            return
-
-    elif not withdrawal.wallet.currency.is_enough_confirmations(tx.confirmations):
+    if not withdrawal.wallet.currency.is_enough_confirmations(tx.confirmations):
         logging.info('%s only has %s confirmations, which is not enough to clear it.', tx.txid, tx.confirmations)
         return
 
@@ -113,6 +92,40 @@ def _update_withdrawal(wallet, conn, tx):
     withdrawal.is_cleared = True
     withdrawal.save(update_fields=['is_cleared'])
     return True
+
+
+def _update_orphaned(wallet, conn, raw_tx):
+    assert raw_tx.category == 'orphaned'
+    logger.info('%s: updating orphaned tx %s.', conn, raw_tx.txid)
+
+    try:
+        tx = Transaction.objects.get(tx_id=raw_tx.txid)
+    except Transaction.DoesNotExist:
+        logger.error('unaccounted for orphaned transaction %s' % raw_tx.txid)
+        return
+
+    if tx.is_orphaned:
+        logger.info('%s is already orphaned, nothing to do.', tx)
+        return
+
+    try:
+        logger.info('orphaning transaction %s' % (raw_tx.txid))
+        with transaction.atomic():
+            tx.is_orphaned = True
+            tx.save(update_fields=['is_orphaned'])
+
+            if tx.type == Transaction.TYPE.DEPOSIT:
+                # nothing to do
+                pass
+
+            elif tx.type == Transaction.TYPE.WITHDRAWAL:
+                balance_query = Balance.objects.filter(id=tx.balance.id)
+                num_updated = balance_query.update(amount=F('amount') + raw_tx.amount)
+                if num_updated != 1:
+                    raise Exception('updated %d rows when updating balance for orphaned withdrawal %s, aborting.' % (num_updated, tx))
+    except:
+        logger.exception('error while orphaning tx %s' % raw_tx.txid)
+        return
 
 
 def create_balance(user_id, currency_id):
@@ -145,13 +158,14 @@ def update_transactions(wallet):
     newest_cleared_tx_id = None
     for tx in conn.get_transactions_since(wallet.last_cleared_tx_id):
         if tx.category == 'receive':
-            cleared_tx = _update_deposit(wallet, conn, tx)
-            if newest_cleared_tx_id is None and cleared_tx:
-                newest_cleared_tx_id = tx.txid
+            cleared_tx = _update_receive(wallet, conn, tx)
         elif tx.category == 'send':
-            cleared_tx = _update_withdrawal(wallet, conn, tx)
-            if newest_cleared_tx_id is None and cleared_tx:
-                newest_cleared_tx_id = tx.txid
+            cleared_tx = _update_send(wallet, conn, tx)
+        elif tx.category == 'orphaned':
+            _update_orphaned(wallet, conn, tx)
+
+        if newest_cleared_tx_id is None and cleared_tx:
+            newest_cleared_tx_id = tx.txid
 
     if newest_cleared_tx_id:
         wallet.last_cleared_tx_id = newest_cleared_tx_id
