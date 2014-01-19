@@ -16,12 +16,10 @@ angular.module('suchApp', ['ngCookies', 'ngResource', 'ngSanitize', 'ngRoute'])
       });
     $httpProvider.interceptors.push(function() {
       return {
-        // optional method
         request: function(cfg) {
-          // do something on success
-          console.log(cfg);
+          // look for views in 'views/...'
           if (cfg.url.match(/\.html$/i)) {
-            cfg.url = STATIC_URL + 'views/' + cfg.url;
+            cfg.url =  STATIC_URL + 'views/' + cfg.url;
           }
           return cfg;
         }

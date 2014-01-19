@@ -5,12 +5,35 @@ var lrSnippet = require('grunt-contrib-livereload/lib/utils').livereloadSnippet;
 var mountFolder = function (connect, dir) {
   return connect.static(require('path').resolve(dir));
 };
+var path = require('path');
 
 // # Globbing
 // for performance reasons we're only matching one level down:
 // 'test/spec/{,*/}*.js'
 // use this if you want to recursively match all subfolders:
 // 'test/spec/**/*.js'
+
+// custom createConfig script for replacing Django {{STATIC_URL}} references
+// when building with usemin
+function createDjangoStaticConcatConfig(context, block) {
+  var cfg = {files: []};
+  var staticPattern = /\{\{\s*STATIC_URL\s*\}\}/;
+
+  block.dest = block.dest.replace(staticPattern, '');
+  var outfile = path.join(context.outDir, block.dest);
+
+  // Depending whether or not we're the last of the step we're not going to output the same thing
+  var files = {
+    dest: outfile,
+    src: []
+  };
+  context.inFiles.forEach(function(f) {
+    files.src.push(path.join(context.inDir, f.replace(staticPattern, '')));
+  });
+  cfg.files.push(files);
+  context.outFiles = [block.dest];
+  return cfg;
+}
 
 module.exports = function (grunt) {
 
@@ -28,6 +51,7 @@ module.exports = function (grunt) {
     // Project settings
     yeoman: {
       // configurable paths
+      name: require('./bower.json').name + 'App',
       app: require('./bower.json').appPath || 'app',
       dist: 'dist'
     },
@@ -162,11 +186,10 @@ module.exports = function (grunt) {
     'bower-install': {
       app: {
         html: '<%= yeoman.app %>/index.html',
+        jsPattern: '<script src="{{STATIC_URL}}{{filePath}}"></script>',
         ignorePath: '<%= yeoman.app %>/'
       }
     },
-
-
 
 
     // Compiles Sass to CSS and generates necessary files if requested
@@ -218,7 +241,25 @@ module.exports = function (grunt) {
     useminPrepare: {
       html: '<%= yeoman.app %>/index.html',
       options: {
-        dest: '<%= yeoman.dist %>'
+        dest: '<%= yeoman.dist %>',
+        flow: {
+          steps: {
+            js: [
+              {
+                name: 'concat',
+                createConfig: createDjangoStaticConcatConfig
+              },
+              'uglifyjs'
+            ],
+            css: [
+              {
+                name: 'cssmin',
+                createConfig: createDjangoStaticConcatConfig
+              }
+            ]
+          },
+          post: {}
+        }
       }
     },
 
@@ -227,7 +268,13 @@ module.exports = function (grunt) {
       html: ['<%= yeoman.dist %>/{,*/}*.html'],
       css: ['<%= yeoman.dist %>/styles/{,*/}*.css'],
       options: {
-        assetsDirs: ['<%= yeoman.dist %>']
+        assetsDirs: [
+          '<%= yeoman.dist %>',
+          '<%= yeoman.dist %>/styles' // used to resolve relative ../ path in css for images
+        ],
+        patterns: {
+          html: [[/\{\{\s*STATIC_URL\s*\}\}([^'"]*)["']/mg, 'django static']]
+        }
       }
     },
 
@@ -258,14 +305,42 @@ module.exports = function (grunt) {
           collapseWhitespace: true,
           collapseBooleanAttributes: true,
           removeCommentsFromCDATA: true,
-          removeOptionalTags: true
+          removeOptionalTags: true,
+          removeEmptyAttributes: true,
+          removeRedundantAttributes: true,
+          removeScriptTypeAttributes: true,
+          removeStyleLinkTypeAttributes: true
         },
         files: [{
           expand: true,
           cwd: '<%= yeoman.dist %>',
-          src: ['*.html', 'views/{,*/}*.html'],
+          src: ['*.html'],
           dest: '<%= yeoman.dist %>'
         }]
+      }
+    },
+
+    ngtemplates: {
+      dist: {
+        options: {
+          htmlmin: '<%= htmlmin.dist.options %>',
+          base: '<%= yeoman.app %>',
+          module: '<%= yeoman.name %>',
+          usemin: '<%= yeoman.dist %>/scripts/scripts.js',
+          // remove app/ prefix from template urls
+          url: function (url) {
+            return url.replace('app/views/', 'views/');
+          },
+          bootstrap: function(module, script) {
+            script = script.replace(/\$templateCache\.put\(([^\n\r]*)/g, function (match, line) {
+              return '$templateCache.put(STATIC_URL + '+line;
+            });
+            return 'angular.module("'+module+'")' +
+                  '.run(["$templateCache", "STATIC_URL", function ($templateCache, STATIC_URL) { '+ script +' }]);';
+          }
+        },
+        src: '<%= yeoman.app %>/views/**.html',
+        dest: '.tmp/scripts/templateCache.js'
       }
     },
 
@@ -299,10 +374,7 @@ module.exports = function (grunt) {
           dest: '<%= yeoman.dist %>',
           src: [
             '*.{ico,png,txt}',
-            '.htaccess',
             '*.html',
-            'views/{,*/}*.html',
-            'bower_components/**/*',
             'images/{,*/}*.{webp}',
             'fonts/*'
           ]
@@ -406,11 +478,13 @@ module.exports = function (grunt) {
     'useminPrepare',
     'concurrent:dist',
     'autoprefixer',
-    'concat',
     'ngmin',
     'copy:dist',
     'cdnify',
     'cssmin',
+    'svgmin',
+    'ngtemplates:dist',
+    'concat',
     'uglify',
     'rev',
     'usemin',
