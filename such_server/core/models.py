@@ -1,9 +1,10 @@
-from decimal import Decimal
 from django.conf import settings
 from django.contrib.auth import get_user_model
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+
+from .fields import CoinAmountField
 
 
 class TimeStampedModel(models.Model):
@@ -22,17 +23,6 @@ class TimeStampedModel(models.Model):
         if 'update_fields' in kwargs:
             kwargs['update_fields'] = list(kwargs['update_fields']) + ['modified_at']
         super(TimeStampedModel, self).save(*args, **kwargs)
-
-
-class CoinAmountField(models.DecimalField):
-    MAX_DIGITS = 16
-    DECIMAL_PLACES = 8
-
-    def __init__(self, *args, **kwargs):
-        kwargs['max_digits'] = self.__class__.MAX_DIGITS
-        kwargs['decimal_places'] = self.__class__.DECIMAL_PLACES
-        kwargs['default'] = Decimal('0.0')
-        super(CoinAmountField, self).__init__(*args, **kwargs)
 
 
 class UserProfile(models.Model):

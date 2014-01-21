@@ -3,8 +3,9 @@ from django.utils.timezone import now
 from rest_framework import serializers
 
 from .models import Order, Market
+from core.serializers import CoinAmountField
+from core.serializers import CurrencyOutputSerializer
 from core.models import Balance
-from core import models
 
 
 class MethodField(serializers.Field):
@@ -40,14 +41,11 @@ class ConstantField(serializers.Field):
         return self.to_native(self._const_value)
 
 
-class CoinAmountField(serializers.DecimalField):
-    def __init__(self, value='', **kwargs):
-        kwargs['max_digits'] = models.CoinAmountField.MAX_DIGITS
-        kwargs['decimal_places'] = models.CoinAmountField.DECIMAL_PLACES
-        super(CoinAmountField, self).__init__(value, **kwargs)
 
 
 class MarketOutputSerializer(serializers.ModelSerializer):
+    base_currency = CurrencyOutputSerializer()
+    market_currency = CurrencyOutputSerializer()
     aggregated_open_orders = serializers.Field(source='get_aggregated_open_orders')
 
     class Meta:
@@ -56,12 +54,13 @@ class MarketOutputSerializer(serializers.ModelSerializer):
 
 
 class OrderOutputSerializer(serializers.ModelSerializer):
+    market = MarketOutputSerializer()
     status = serializers.Field(source='get_status_display')
     type = serializers.Field(source='get_type_display')
 
     class Meta:
         model = Order
-        exclude = ['user']
+        exclude = ['id', 'user']
         depth = 2
 
 

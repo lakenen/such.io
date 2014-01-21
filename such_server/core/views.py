@@ -4,7 +4,6 @@ from django.http import HttpResponse
 from django.utils.timezone import now
 from django.shortcuts import render, redirect
 from django.views.decorators.csrf import ensure_csrf_cookie
-from rest_framework import status
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
