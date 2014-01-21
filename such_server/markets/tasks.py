@@ -1,7 +1,9 @@
 import logging
 from django.db import transaction
+from django.db.models import F
 from django.utils.timezone import now
 
+from core.models import Balance
 from .models import Market, Order
 
 
@@ -57,6 +59,18 @@ def do_transaction(buy, sell):
 
             buy.save()
             sell.save()
+
+            # update seller's and buyer's balances
+            for order in [sell, buy]:
+                buy_currency, _ = order.get_buy_and_sell_currencies()
+                buy_amount, _ = order.get_buy_and_sell_filled_amounts()
+                balance = Balance.objects.get(user=order.user, currency=buy_currency)
+
+                balance_query = Balance.objects.filter(id=balance.id)
+                num_updated = balance_query.update(amount=F('amount') + buy_amount)
+
+                if num_updated != 1:
+                    raise Exception('updated %d rows when updating balance %s for %s' % (num_updated, balance, order))
 
             return new_buy, new_sell
     except Exception:

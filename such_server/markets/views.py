@@ -1,9 +1,12 @@
+from django.db import transaction
+from django.db.models import F
 from django.utils.timezone import now
 from rest_framework import status
 from rest_framework.permissions import AllowAny
 from rest_framework.response import Response
 from rest_framework.viewsets import ViewSet
 
+from core.models import Balance
 from .models import Order, Market
 from .serializers import OrderInputSerializer, OrderOutputSerializer
 from .serializers import MarketOutputSerializer
@@ -29,7 +32,6 @@ class MarketViewSet(ViewSet):
         return Response(output_serializer.data)
 
 
-
 class OrderViewSet(ViewSet):
     model = Order
 
@@ -51,9 +53,23 @@ class OrderViewSet(ViewSet):
         if not serializer.is_valid():
             return Response(serializer.errors, status=status.HTTP_400_BAD_REQUEST)
 
-        order = serializer.object
-        order.save()
+        with transaction.atomic():
 
+            order = serializer.object
+            order.save()
+
+            _, sell_currency = order.get_buy_and_sell_currencies()
+            _, sell_amount = order.get_buy_and_sell_amounts()
+
+            balance = Balance.objects.get(user=order.user, currency=sell_currency)
+
+            balance_query = Balance.objects.filter(id=balance.id, amount__gte=sell_amount)
+            num_updated = balance_query.update(amount=F('amount') - sell_amount)
+
+            if num_updated != 1:
+                raise Exception('updated %d rows when placing order %s' % (num_updated, order))
+
+        #TODO fire this asynchronously
         clear_market(order.market_id)
 
         output_serializer = OrderOutputSerializer(order)

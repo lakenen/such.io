@@ -63,6 +63,24 @@ class Order(TimeStampedModel):
                 self.amount
         )
 
+    def get_buy_and_sell_currencies(self):
+        if self.type == Order.TYPE.BUY:
+            return self.market.market_currency, self.market.base_currency
+        elif self.type == Order.TYPE.SELL:
+            return self.self.market.base_currency, self.market.market_currency
+
+    def get_buy_and_sell_amounts(self):
+        if self.type == Order.TYPE.BUY:
+            return self.amount, self.amount * self.rate
+        elif self.type == Order.TYPE.SELL:
+            return self.amount * self.rate, self.amount
+
+    def get_buy_and_sell_filled_amounts(self):
+        if self.type == Order.TYPE.BUY:
+            return self.filled_amount, self.filled_amount * self.filled_rate
+        elif self.type == Order.TYPE.SELL:
+            return self.filled_amount * self.filled_rate, self.filled_amount
+
     def clone(self):
         kwargs = {}
         for field in self._meta.fields:
