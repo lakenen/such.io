@@ -3,27 +3,9 @@ from django.utils.timezone import now
 from rest_framework import serializers
 
 from .models import Order, Market
-from core.serializers import CoinAmountField
+from core.serializers import MethodField, CoinAmountField
 from core.serializers import CurrencyOutputSerializer
 from core.models import Balance
-
-
-class MethodField(serializers.Field):
-    """
-    A field that gets its value by calling a method on the serializer it's attached to.
-    """
-
-    def __init__(self, method_name):
-        self.method_name = method_name
-        super(MethodField, self).__init__()
-
-    def field_from_native(self, data, files, field_name, into):
-        value = getattr(self.parent, self.method_name)()
-        into[field_name] = value
-
-    def field_to_native(self, obj, field_name):
-        value = getattr(self.parent, self.method_name)()
-        return self.to_native(value)
 
 
 class ConstantField(serializers.Field):
@@ -39,8 +21,6 @@ class ConstantField(serializers.Field):
 
     def field_to_native(self, obj, field_name):
         return self.to_native(self._const_value)
-
-
 
 
 class MarketOutputSerializer(serializers.ModelSerializer):
@@ -65,7 +45,7 @@ class OrderOutputSerializer(serializers.ModelSerializer):
 
 
 class OrderInputSerializer(serializers.Serializer):
-    user = MethodField('get_user')
+    user = MethodField('_get_user')
     status = ConstantField(value=Order.STATUS.OPEN)
 
     market = serializers.IntegerField()
@@ -73,7 +53,7 @@ class OrderInputSerializer(serializers.Serializer):
     amount = CoinAmountField()
     rate = CoinAmountField()
 
-    def get_user(self):
+    def _get_user(self):
         return self.context['request'].user
 
     def validate_market(self, attrs, source):
