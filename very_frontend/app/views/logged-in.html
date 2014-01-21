@@ -1,2 +1,6 @@
-<div ng-controller="OrderFormCtrl" order-form></div>
-<div user-orders></div>
+<div ng-controller="MarketCtrl">
+  <div ng-if="market" ng-include="'market.html'"></div>
+  <div ng-if="markets" ng-repeat="market in markets">
+    <a href="/market/{{market.id}}">{{market.market_currency.symbol}}/{{market.base_currency.symbol}}</a>
+  </div>
+</div>

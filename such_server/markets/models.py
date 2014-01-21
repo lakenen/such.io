@@ -67,7 +67,7 @@ class Order(TimeStampedModel):
         if self.type == Order.TYPE.BUY:
             return self.market.market_currency, self.market.base_currency
         elif self.type == Order.TYPE.SELL:
-            return self.self.market.base_currency, self.market.market_currency
+            return self.market.base_currency, self.market.market_currency
 
     def get_buy_and_sell_amounts(self):
         if self.type == Order.TYPE.BUY:

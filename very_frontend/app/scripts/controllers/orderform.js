@@ -4,12 +4,7 @@ angular.module('suchApp')
   .controller('OrderFormCtrl', function ($scope, $rootScope, $filter, UserOrder) {
     var MAX_QUANTITY = 1e+8;
     var cryptoFilter = $filter('cryptoCurrency');
-    var market = {
-      market: 'DOGE',
-      base: 'BTC',
-      buyRate: cryptoFilter(0.00000070),
-      sellRate: cryptoFilter(0.00000069),
-    };
+    var market = $rootScope.market;
     var order = {
       type: 'buy',
       quantity: cryptoFilter(0),
@@ -17,10 +12,15 @@ angular.module('suchApp')
       rate: market.buyRate
     };
 
-    $scope.market = market;
     $scope.order = order;
     $scope.txFee = $rootScope.txFee;
     $scope.showRequired = true;
+
+    $rootScope.$watchCollection('market', function (mkt) {
+      market = mkt;
+      order.market = order.market || mkt.market;
+      order.rate = market[order.type+'Rate'];
+    });
 
     $scope.placeOrder = function () {
       var quantity = order.quantity;
@@ -73,6 +73,7 @@ angular.module('suchApp')
 
     $scope.setType = function (type) {
       order.type = type;
+      order.rate = market[order.type+'Rate'];
       updateInfo();
     };
 

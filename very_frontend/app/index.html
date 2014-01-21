@@ -1,4 +1,4 @@
-<!doctype html>
+<!DOCTYPE html>
 <html class="no-js">
   <head>
     <meta charset="utf-8">
@@ -21,7 +21,7 @@
     <![endif]-->
 
     <div class="container" ng-view>
-      <div class="header"></div>
+      <div class="loading"></div>
     </div>
 
     <div class="footer">
@@ -30,28 +30,35 @@
 
     <!-- build:js {{STATIC_URL}}scripts/vendor.js -->
     <!-- bower:js -->
-    <script type="text/javascript" src="{{STATIC_URL}}bower_components/angular/angular.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}bower_components/angular-resource/angular-resource.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}bower_components/angular-cookies/angular-cookies.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}bower_components/angular-sanitize/angular-sanitize.js"></script>
-    <script type="text/javascript" src="{{STATIC_URL}}bower_components/angular-route/angular-route.js"></script>
+    <script src="{{STATIC_URL}}bower_components/angular/angular.js"></script>
+    <script src="{{STATIC_URL}}bower_components/angular-resource/angular-resource.js"></script>
+    <script src="{{STATIC_URL}}bower_components/angular-cookies/angular-cookies.js"></script>
+    <script src="{{STATIC_URL}}bower_components/angular-sanitize/angular-sanitize.js"></script>
+    <script src="{{STATIC_URL}}bower_components/angular-route/angular-route.js"></script>
     <!-- endbower -->
     <!-- endbuild -->
 
     <!-- build:js({.tmp,app}) {{STATIC_URL}}scripts/scripts.js -->
     <script src="{{STATIC_URL}}scripts/app.js"></script>
-    <script src="{{STATIC_URL}}scripts/controllers/main.js"></script>
-    <script src="{{STATIC_URL}}scripts/filters/cryptocurrency.js"></script>
-    <script src="{{STATIC_URL}}scripts/directives/userorders.js"></script>
-    <script src="{{STATIC_URL}}scripts/services/userorder.js"></script>
-    <script src="{{STATIC_URL}}scripts/controllers/orderform.js"></script>
-    <script src="{{STATIC_URL}}scripts/directives/orderform.js"></script>
-    <script src="{{STATIC_URL}}scripts/services/socket.js"></script>
+    <script src="{{STATIC_URL}}scripts/routes.js"></script>
+
     <script src="{{STATIC_URL}}scripts/controllers/login.js"></script>
-    <script src="{{STATIC_URL}}scripts/directives/login.js"></script>
+    <script src="{{STATIC_URL}}scripts/controllers/main.js"></script>
+    <script src="{{STATIC_URL}}scripts/controllers/market.js"></script>
+    <script src="{{STATIC_URL}}scripts/controllers/orderform.js"></script>
+
     <script src="{{STATIC_URL}}scripts/directives/autofill.js"></script>
-    <script src="{{STATIC_URL}}scripts/filters/capitalize.js"></script>
+    <script src="{{STATIC_URL}}scripts/directives/login.js"></script>
+    <script src="{{STATIC_URL}}scripts/directives/orderform.js"></script>
+    <script src="{{STATIC_URL}}scripts/directives/userorders.js"></script>
+
     <script src="{{STATIC_URL}}scripts/filters/boolean.js"></script>
+    <script src="{{STATIC_URL}}scripts/filters/capitalize.js"></script>
+    <script src="{{STATIC_URL}}scripts/filters/cryptocurrency.js"></script>
+
+    <script src="{{STATIC_URL}}scripts/services/market.js"></script>
+    <script src="{{STATIC_URL}}scripts/services/socket.js"></script>
+    <script src="{{STATIC_URL}}scripts/services/userorder.js"></script>
     <!-- endbuild -->
 
 <script>

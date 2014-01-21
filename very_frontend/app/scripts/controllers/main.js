@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('suchApp')
-  .controller('MainCtrl', function ($scope, $rootScope, WOW) {
+  .controller('MainCtrl', function ($scope, $rootScope, WOW, $route) {
     $scope.wow = WOW[Math.floor(Math.random() * WOW.length)];
     function setTemplate() {
       $scope.mainTemplate = $rootScope.user.isLogged ?

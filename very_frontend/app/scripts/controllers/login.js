@@ -1,7 +1,7 @@
 'use strict';
 
 angular.module('suchApp')
-  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$cookies', function ($scope, $rootScope, $http, $cookies) {
+  .controller('LoginCtrl', ['$scope', '$rootScope', '$http', '$cookies', '$location', function ($scope, $rootScope, $http, $cookies, $location) {
     var user = $rootScope.user;
 
     $scope.showSignup = false;
@@ -27,6 +27,7 @@ angular.module('suchApp')
           $scope.loginForm.$setPristine();
           $scope.showSignup = false;
           $rootScope.$broadcast('auth:change', false);
+          $location.path('/');
         });
     };
 
